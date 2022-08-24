@@ -22,6 +22,7 @@ contract Auction
      */
     event Start();
     event Bid(address indexed sender, uint256 amount);
+    event Withdrawal(address indexed bidder, uint256 amount);
     /**
      * State Variables
      */
@@ -97,5 +98,16 @@ contract Auction
         highestBidder = msg.sender;
 
         emit Bid(msg.sender, msg.value);
+    }
+
+    function withdraw() external
+    {
+        uint256 bal = bids[msg.sender];
+        // protect from reentrancy by updating
+        // state variables BEFORE sending ETH
+        bids[msg.sender] = 0;
+        payable(msg.sender).transfer(bal);
+
+        emit Withdrawal(msg.sender, bal);
     }
 }
