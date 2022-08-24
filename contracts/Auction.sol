@@ -21,6 +21,7 @@ contract Auction
      * Events
      */
     event Start();
+    event Bid(address indexed sender, uint256 amount);
     /**
      * State Variables
      */
@@ -42,7 +43,7 @@ contract Auction
     // Amount of the highest bid
     uint256 public highestBid;
     // to hold the bids that all bidders have made
-    // bidder address -> amount
+    // bidder address -> total amount bidded
     mapping(address => uint256) public bids;
 
     constructor(
@@ -73,5 +74,28 @@ contract Auction
         nft.transferFrom(seller, address(this), nftId);
 
         emit Start();
+    }
+
+    function bid() external payable
+    {
+        require(started, "not started yet");
+        require(block.timestamp < endAt, "auction ended already");
+        require(msg.value > highestBid, "value < current highest bid");
+
+        // address 0 is the default value, when the first bidder calls
+        // this function the highestBidder will be address 0, so only
+        // execute this if highestBidder is not address 0
+        // if this is true then store the current highest bid before
+        // we overwrite it. this keeps track of all the bids that were
+        // outbid, so that later they can withdraw their ETH
+        if(highestBidder != address(0))
+        {
+            bids[highestBidder] += highestBid;
+        }
+
+        highestBid = msg.value;
+        highestBidder = msg.sender;
+
+        emit Bid(msg.sender, msg.value);
     }
 }
