@@ -23,6 +23,7 @@ contract Auction
     event Start();
     event Bid(address indexed sender, uint256 amount);
     event Withdrawal(address indexed bidder, uint256 amount);
+    event End(address highestBidder, uint256 amount);
     /**
      * State Variables
      */
@@ -109,5 +110,36 @@ contract Auction
         payable(msg.sender).transfer(bal);
 
         emit Withdrawal(msg.sender, bal);
+    }
+    // the reason that this function can be called by anyone is that
+    // if we were to restrict this function call to only the seller
+    // then the seller could choose to never call this function, consequently
+    // the highest bidder would have their ETH stuck in this contract
+    function end() external
+    {
+        require(started, "auction not started");
+        require(!ended, "auction already ended");
+        require(block.timestamp >= endAt, "auction not over yet");
+
+        ended = true;
+
+        // there is the case where no one bids on the NFT,
+        // in this case highestBidder will be address 0
+        if (highestBidder != address(0))
+        {
+            // there were participants in the auction
+            // transfer the NFT to the highest bidder
+            // and transfer the ETH to the seller
+            nft.transferFrom(address(this), highestBidder, nftId);
+            seller.transfer(highestBid);
+        }
+        else
+        {
+            // else no one participated in the auction
+            // so transfer the NFT from the contract back to the seller
+            nft.transferFrom(address(this), seller, nftId);
+        }
+
+        emit End(highestBidder, highestBid);
     }
 }
