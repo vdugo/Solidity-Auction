@@ -1,13 +1,31 @@
-# Sample Hardhat Project
+# Solidity Auction
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+## About
 
-Try running some of the following tasks:
+- An auction smart contract for ERC-721 NFT tokens.
 
-```shell
-npx hardhat help
-npx hardhat test
-GAS_REPORT=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.js
+## Technology Stack & Tools
+
+- Solidity (Writing Smart Contract)
+- Javascript (Testing)
+- [Ethers](https://docs.ethers.io/v5/) (Blockchain Interaction)
+- [Hardhat](https://hardhat.org/) (Development Framework)
+
+## Requirements For Initial Setup
+- Install [NodeJS](https://nodejs.org/en/), should work with any node version below 16.5.0
+- Install [Hardhat](https://hardhat.org/)
+
+## Setting Up
+### 1. Clone/Download the Repository
+
+### 2. Install Dependencies:
 ```
+$ cd Solidity-Auction
+$ npm install 
+```
+
+### 3. Compile Contracts
+`$ npx hardhat compile`
+
+### 4. Run Tests
+`$ npx hardhat test`
